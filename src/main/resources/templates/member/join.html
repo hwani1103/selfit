@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:replace="fragments.html :: head"></div>
+<body class="bg-light">
+<div th:replace="fragments.html :: main-nav"></div>
+
+
+<div style="width:80%; margin-left:auto; margin-right:auto; margin-top:2em; margin-bottom:2em;">
+    <form class="needs-validation col-sm-10" action="#"
+          th:action="@{/join}" th:object="${joinForm}" method="post" novalidate>
+
+        <small class="form-text text-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Email Error</small>
+        <div class="input-group mb-4">
+            <span class="input-group-text" id="basic-addon1">E-Mail</span>
+            <input id="email" type="email" th:field="*{email}" class="form-control"
+                   placeholder="Selfit@admin.com" aria-describedby="emailHelp" required>
+            <button type="button" class="btn btn-primary btn-sm btn-color">중복 확인</button>
+
+        </div>
+
+        <small class="form-text text-danger" th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}">Nickname Error</small>
+        <div class="input-group mb-4">
+            <span class="input-group-text" id="basic-addon3">닉네임</span>
+            <input id="nickname" type="text" th:field="*{nickname}" class="form-control"
+                   placeholder="Selfit" aria-describedby="nicknameHelp" required minlength="2" maxlength="10">
+            <button type="button"class="btn btn-primary btn-sm btn-color">중복 확인</button>
+
+        </div>
+
+        <div class="input-group mb-4">
+            <span class="input-group-text" id="basic-addon5">비밀번호</span>
+            <input id="password" type="password" th:field="*{password}" class="form-control"
+                   aria-describedby="passwordHelp" required minlength="8" maxlength="20">
+        </div>
+
+        <div class="input-group mb-4">
+            <span class="input-group-text" id="basic-addon6">비밀번호 확인</span>
+            <input id="passwordConfirm" type="password" th:field="*{password}" class="form-control"
+                   aria-describedby="passwordHelp" required minlength="8" maxlength="20">
+        </div>
+
+
+<!--        <small class="invalid-feedback">패스워드를 입력하세요.</small>-->
+<!--        <small class="form-text text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Password Error</small>-->
+
+        <div class="form-text">비밀번호는 8자리 이상 영문, 숫자, 특수문자를 한 개 이상 사용해 주세요.</div>
+
+        <button type="submit" class="btn btn-primary btn-sm btn-color mt-3">가입하기</button>
+    </form>
+
+</div>
+
+
+
+
+
+<div th:replace="fragments.html :: footer"></div>
+
+<script th:replace="fragments.html :: form-validation"></script>
+
+
+<script src="/node_modules/jquery/dist/jquery.min.js"></script>
+<script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+
+
+
+
+
+
