@@ -21,7 +21,7 @@ public class JoinForm {
     private String nickname;
 
     @NotBlank(message = "비밀번호를 입력해 주세요.")
-    @Length(message = "비밀번호는 8자리 이상 입력해 주세요.", min = 8, max=20)
+    @Length(message = "비밀번호는 8자리 이상, 20자리 이하로 입력해 주세요.", min = 8, max=20)
     private String password;
 
     

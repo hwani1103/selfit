@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments.html :: head"></head>
+<body class="bg-light">
+
+<div th:replace="fragments.html :: main-nav"></div>
+<div class="container">
+
+  <div class="row mt-5 justify-content-center">
+    <div class="col-2">
+
+      <svg th:if="${#strings.isEmpty(member.profileImage)}" class="img-fluid float-left rounded img-thumbnail"
+           th:data-jdenticon-value="${member.nickname}" width="125" height="125"></svg>
+      <img th:if="${!#strings.isEmpty(member.profileImage)}" class="img-fluid float-left rounded img-thumbnail"
+           th:src="${member.profileImage}"
+           width="125" height="125"/>
+    </div>
+
+    <div class="col-8">
+      <h1 class="display-4 " th:text="${member.nickname}">Whiteship</h1>
+      <p class="lead" th:if="${!#strings.isEmpty(member.bio)}" th:text="${member.bio}">bio</p>
+      <p class="lead" th:if="${#strings.isEmpty(member.bio) && isOwner}">
+        한 줄 소개를 추가하세요.
+      </p>
+    </div>
+  </div>
+
+  <div class="row mt-3 justify-content-center">
+    <div class="col-2">
+      <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+        <a class="nav-link active" id="v-pills-intro-tab" data-toggle="pill" href="#v-pills-profile"
+           role="tab" aria-controls="v-pills-profile" aria-selected="true">소개</a>
+        <a class="nav-link" id="v-pills-study-tab" data-toggle="pill" href="#v-pills-study"
+           role="tab" aria-controls="v-pills-study" aria-selected="false">스터디</a>
+      </div>
+    </div>
+    <div class="col-8">
+      <div class="tab-content" id="v-pills-tabContent">
+        <div class="tab-pane fade show active" id="v-pills-profile" role="tabpanel" aria-labelledby="v-pills-home-tab">
+          <p th:if="${!#strings.isEmpty(member.url)}"> <!-- 여기 세개 #앞에 !붙여야됨.-->
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-globe" viewBox="0 0 16 16">
+              <path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm7.5-6.923c-.67.204-1.335.82-1.887 1.855A7.97 7.97 0 0 0 5.145 4H7.5V1.077zM4.09 4a9.267 9.267 0 0 1 .64-1.539 6.7 6.7 0 0 1 .597-.933A7.025 7.025 0 0 0 2.255 4H4.09zm-.582 3.5c.03-.877.138-1.718.312-2.5H1.674a6.958 6.958 0 0 0-.656 2.5h2.49zM4.847 5a12.5 12.5 0 0 0-.338 2.5H7.5V5H4.847zM8.5 5v2.5h2.99a12.495 12.495 0 0 0-.337-2.5H8.5zM4.51 8.5a12.5 12.5 0 0 0 .337 2.5H7.5V8.5H4.51zm3.99 0V11h2.653c.187-.765.306-1.608.338-2.5H8.5zM5.145 12c.138.386.295.744.468 1.068.552 1.035 1.218 1.65 1.887 1.855V12H5.145zm.182 2.472a6.696 6.696 0 0 1-.597-.933A9.268 9.268 0 0 1 4.09 12H2.255a7.024 7.024 0 0 0 3.072 2.472zM3.82 11a13.652 13.652 0 0 1-.312-2.5h-2.49c.062.89.291 1.733.656 2.5H3.82zm6.853 3.472A7.024 7.024 0 0 0 13.745 12H11.91a9.27 9.27 0 0 1-.64 1.539 6.688 6.688 0 0 1-.597.933zM8.5 12v2.923c.67-.204 1.335-.82 1.887-1.855.173-.324.33-.682.468-1.068H8.5zm3.68-1h2.146c.365-.767.594-1.61.656-2.5h-2.49a13.65 13.65 0 0 1-.312 2.5zm2.802-3.5a6.959 6.959 0 0 0-.656-2.5H12.18c.174.782.282 1.623.312 2.5h2.49zM11.27 2.461c.247.464.462.98.64 1.539h1.835a7.024 7.024 0 0 0-3.072-2.472c.218.284.418.598.597.933zM10.855 4a7.966 7.966 0 0 0-.468-1.068C9.835 1.897 9.17 1.282 8.5 1.077V4h2.355z"/>
+            </svg>
+            <span th:text="${member.url}" class="col-11"></span>
+          </p>
+          <p th:if="${!#strings.isEmpty(member.occupation)}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+              <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
+              <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8zm8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1z"/>
+            </svg>
+            <span th:text="${member.occupation}" class="col-9"></span>
+          </p>
+          <p th:if="${!#strings.isEmpty(member.goal)}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-fire" viewBox="0 0 16 16">
+              <path d="M8 16c3.314 0 6-2 6-5.5 0-1.5-.5-4-2.5-6 .25 1.5-1.25 2-1.25 2C11 4 9 .5 6 0c.357 2 .5 4-2 6-1.25 1-2 2.729-2 4.5C2 14 4.686 16 8 16Zm0-1c-1.657 0-3-1-3-2.75 0-.75.25-2 1.25-3C6.125 10 7 10.5 7 10.5c-.375-1.25.5-3.25 2-3.5-.179 1-.25 2 1 3 .625.5 1 1.364 1 2.25C11 14 9.657 15 8 15Z"/>
+            </svg>
+            <span th:text="${member.goal}" class="col-9"></span>
+          </p>
+          <p th:if="${isOwner}">
+                            <span style="font-size: 20px;">
+                                <i class="fa fa-envelope-o col-1"></i>
+                            </span>
+            <span th:text="${member.email}" class="col-9"></span>
+          </p>
+          <p th:if="${isOwner || member.validated}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar4" viewBox="0 0 16 16">
+              <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v1h14V3a1 1 0 0 0-1-1H2zm13 3H1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V5z"/>
+            </svg>
+            <span th:text="${#temporals.format(member.joinedTime, 'yyyy년 M월 가입')}" class="col-9"></span>
+          </p>
+          <div th:if="${isOwner}">
+            <a class="btn btn-outline-primary" href="#" th:href="@{/profile/modify}">프로필 수정</a>
+          </div>
+        </div>
+        <div class="tab-pane fade" id="v-pills-study" role="tabpanel" aria-labelledby="v-pills-profile-tab">
+          Study
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div th:replace="fragments.html :: footer"></div>
+</div>
+</body>
+</html>
