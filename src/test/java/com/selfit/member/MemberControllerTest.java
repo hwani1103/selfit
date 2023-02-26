@@ -212,8 +212,18 @@ class MemberControllerTest {
                 .andExpect(authenticated());
 
     }
+
+    @DisplayName("회원 프로필 조회")
+    @WithAccount("gogos")
+    @Test
+    void viewProfile() throws Exception{
+        mockMvc.perform(get("/profile/gogos"))
+                .andExpect(model().attributeExists("member"))
+                .andExpect(model().attributeExists("isOwner"))
+                .andExpect(model().attributeExists("allTags"))
+                .andExpect(status().isOk());
+    }
 }
-//53bd30 c817b2
 
 
 

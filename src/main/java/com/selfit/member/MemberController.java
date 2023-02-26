@@ -1,11 +1,14 @@
 package com.selfit.member;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.selfit.domain.Member;
+import com.selfit.domain.Tag;
 import com.selfit.logging.ClassLevelLogging;
 import com.selfit.member.form.JoinForm;
 import com.selfit.member.form.TokenForm;
 import com.selfit.member.validator.JoinFormValidator;
 import com.selfit.member.validator.TokenFormValidator;
+import com.selfit.profile.TagRepository;
 import com.selfit.profile.form.PasswordForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +26,9 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
@@ -35,6 +41,7 @@ public class MemberController {
     private final MemberService memberService;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TagRepository tagRepository;
 
 
     @InitBinder("joinForm")
@@ -102,7 +109,7 @@ public class MemberController {
         }
 
         Member byEmail = memberRepository.findByEmail(tokenForm.getEmail());
-        if(byEmail.isValidated()){
+        if (byEmail.isValidated()) {
             memberService.sendEmail(byEmail);
             return "redirect:/forgot-password";
         }
@@ -111,7 +118,7 @@ public class MemberController {
     }
 
     @GetMapping("/forgot-password") //TODO 테스트 보완 필요 , 테스트 작성하다가 어려워서 멈춤.
-    public String tokenLogin(Model model){
+    public String tokenLogin(Model model) {
         TokenForm tokenForm = new TokenForm();
         model.addAttribute(tokenForm);
         return "member/forgot_password";
@@ -119,7 +126,7 @@ public class MemberController {
 
     @PostMapping("/forgot-password") //TODO 테스트 보완 필요 , 기능은 정상 작동되는데 테스트 짜기가 어렵네
     public String tokenLoginSubmit(@Valid @ModelAttribute TokenForm tokenForm, Errors errors,
-                                   RedirectAttributes redirectAttributes){
+                                   RedirectAttributes redirectAttributes) {
         if (errors.hasErrors()) { //이메일 검증.
             return "member/forgot_password";
         }
@@ -156,6 +163,10 @@ public class MemberController {
 
         model.addAttribute(byNickname);
         model.addAttribute("isOwner", byNickname.equals(member));
+        Set<Tag> tags = memberService.getTags(member);
+        List<String> allTags = tags.stream().map(Tag::getTitle).collect(Collectors.toList());
+
+        model.addAttribute("allTags", allTags);
 
         return "profile/profile";
     }

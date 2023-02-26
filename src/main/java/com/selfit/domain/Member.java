@@ -5,6 +5,8 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -31,6 +33,9 @@ public class Member {
     private String bio;
 
     private String url;
+
+    @ManyToMany
+    private Set<Tag> tags = new HashSet<>();
 
     private String occupation;
 

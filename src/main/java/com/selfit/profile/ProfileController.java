@@ -1,6 +1,9 @@
 package com.selfit.profile;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.selfit.domain.Member;
+import com.selfit.domain.Tag;
 import com.selfit.logging.ClassLevelLogging;
 import com.selfit.member.CurrentMember;
 import com.selfit.member.MemberRepository;
@@ -9,6 +12,7 @@ import com.selfit.member.form.JoinForm;
 import com.selfit.profile.form.NicknameForm;
 import com.selfit.profile.form.PasswordForm;
 import com.selfit.profile.form.ProfileForm;
+import com.selfit.profile.form.TagForm;
 import com.selfit.profile.validator.NicknameFormValidator;
 import com.selfit.profile.validator.PasswordFormValidator;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +27,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @ClassLevelLogging
@@ -34,15 +41,16 @@ public class ProfileController {
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
     private final NicknameFormValidator nicknameFormValidator;
-
+    private final TagRepository tagRepository;
+    private final ObjectMapper objectMapper;
 
     @InitBinder("passwordForm")
-    public void passwordValidation(WebDataBinder webDataBinder){
+    public void passwordValidation(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(new PasswordFormValidator());
     }
 
     @InitBinder("nicknameForm")
-    public void nicknameValidation(WebDataBinder webDataBinder){
+    public void nicknameValidation(WebDataBinder webDataBinder) {
         webDataBinder.addValidators(nicknameFormValidator);
     }
 
@@ -69,7 +77,7 @@ public class ProfileController {
     }
 
     @GetMapping("/change/password")
-    public String changePwForm(@CurrentMember Member member, Model model){
+    public String changePwForm(@CurrentMember Member member, Model model) {
         model.addAttribute(member);
         model.addAttribute(new PasswordForm());
 
@@ -78,8 +86,8 @@ public class ProfileController {
 
     @PostMapping("/change/password")
     public String changePassword(@CurrentMember Member member, @Valid @ModelAttribute PasswordForm passwordForm,
-                                 Errors errors, Model model, RedirectAttributes redirectAttributes){
-        if(errors.hasErrors()){
+                                 Errors errors, Model model, RedirectAttributes redirectAttributes) {
+        if (errors.hasErrors()) {
             model.addAttribute(member);
             return "profile/change-password";
         }
@@ -98,7 +106,7 @@ public class ProfileController {
     }
 
     @GetMapping("/change/nickname")
-    public String changeNicknameForm(@CurrentMember Member member, Model model){
+    public String changeNicknameForm(@CurrentMember Member member, Model model) {
         model.addAttribute(new NicknameForm());
         model.addAttribute(member);
 
@@ -107,8 +115,8 @@ public class ProfileController {
 
     @PostMapping("/change/nickname")
     public String changeNickname(@CurrentMember Member member, @Valid @ModelAttribute NicknameForm nicknameForm,
-                                 Errors errors, RedirectAttributes redirectAttributes, Model model){
-        if(errors.hasErrors()){
+                                 Errors errors, RedirectAttributes redirectAttributes, Model model) {
+        if (errors.hasErrors()) {
             model.addAttribute(member);
             return "profile/change-nickname";
         }
@@ -120,7 +128,58 @@ public class ProfileController {
 
     }
 
+    @GetMapping("/change/tags")
+    public String changeTags(@CurrentMember Member member, Model model) throws JsonProcessingException {
+        model.addAttribute(member);
 
+        Set<Tag> tags = memberService.getTags(member);
+        model.addAttribute("tags", tags.stream().map(Tag::getTitle).collect(Collectors.toList()));
+
+        List<String> allTags = tagRepository.findAll().stream().map(Tag::getTitle).collect(Collectors.toList());
+
+        model.addAttribute("whitelist", objectMapper.writeValueAsString(allTags));
+        model.addAttribute("allTags", allTags);
+        return "profile/change-tags";
+    }
+
+    @PostMapping("/change/tags/add")
+    @ResponseBody
+    public ResponseEntity addTag(@CurrentMember Member member, @RequestBody TagForm tagForm) {
+
+        String title = tagForm.getTagTitle();
+        Tag tag = tagRepository.findByTitle(title);
+        if (tag == null) {
+           return ResponseEntity.badRequest().build();
+        }
+
+        memberService.addTag(member, tag);
+        return ResponseEntity.ok().build(); // 200 OK 응답을 보냄. 내용은 없음.
+
+    }
+
+    @PostMapping("/change/tags/remove")
+    @ResponseBody
+    public ResponseEntity removeTag(@CurrentMember Member member, @RequestBody TagForm tagForm) {
+        String title = tagForm.getTagTitle();
+        Tag tag = tagRepository.findByTitle(title);
+        if(tag==null){
+            return ResponseEntity.badRequest().build();
+        }
+        memberService.removeTag(member, tag);
+        return ResponseEntity.ok().build();
+
+    }
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
