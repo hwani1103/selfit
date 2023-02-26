@@ -6,7 +6,15 @@
 <body class="bg-light">
 <div th:replace="fragments.html :: main-nav"></div>
 
-<div style="width:40%; margin-left:auto; margin-right:auto; margin-top:10em; margin-bottom:10em;
+
+
+<h4 style="text-align:center; margin-top:3em;" > 가입 후 인증에 실패하셨다면 이메일 재전송이 가능합니다. </h4>
+<h4 style="text-align:center;"> 인증에 성공하셨지만, 패스워드를 분실하셨다면 이메일 재 인증으로 로그인이 가능합니다. </h4>
+<h4 style="text-align:center;"> 모든 이메일 재전송은, 최초 1회 이후 한시간에 한번씩 재전송이 가능합니다. </h4>
+
+
+
+<div style="width:40%; margin-left:auto; margin-right:auto; margin-top:3em; margin-bottom:10em;
             padding:15px; border:2px solid rgb(52, 51, 47); border-radius:10px;">
     <form class="needs-validation col-sm-10" action="#"
           th:action="@{/resend-token}" th:object="${tokenForm}" method="post" novalidate>
@@ -20,8 +28,14 @@
         <small class="form-text text-danger" th:if="${#fields.hasErrors('email')}"
                th:errors="*{email}">Email Error</small>
         <br>
-        <button type="submit" class="btn btn-primary btn-sm btn-color mt-3">인증 메일 재전송</button>
+        <button type="submit" class="btn btn-primary btn-sm btn-color mt-3">인증 메일 전송</button>
     </form>
+    <h6 style="margin-top:1em;">
+        <a href="#" th:href="@{/check-token}" style="text-decoration: none;">인증하러 가기</a>
+    </h6>
+
+
+
 </div>
 
 

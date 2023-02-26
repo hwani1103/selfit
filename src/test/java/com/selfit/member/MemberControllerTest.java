@@ -4,6 +4,7 @@ import com.selfit.WithAccount;
 import com.selfit.domain.Member;
 import com.selfit.logging.ClassLevelLogging;
 import com.selfit.member.form.TokenForm;
+import com.selfit.profile.form.PasswordForm;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,8 +16,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -50,8 +57,9 @@ class MemberControllerTest {
     @MockBean
     JavaMailSender javaMailSender;
 
-    @BeforeEach // 인증 메일 재전송, 가입된 Email과 일치한지 확인하기 위해 미리 Data 저장
-    void beforeEach(){
+    @BeforeEach
+        // 인증 메일 재전송, 가입된 Email과 일치한지 확인하기 위해 미리 Data 저장
+    void beforeEach() {
         TokenForm tokenForm = new TokenForm();
         tokenForm.setEmail("bbb@aaa.com");
         Member member = modelMapper.map(tokenForm, Member.class);
@@ -104,13 +112,14 @@ class MemberControllerTest {
     }
 
     @DisplayName("토큰 정상, 인증 완료, 로그인")
-    @Test @WithAccount("aaa")
+    @Test
+    @WithAccount("gogos")
     void validToken() throws Exception {
         TokenForm tokenForm = new TokenForm();
         tokenForm.setValidationToken("aaabbb");
         mockMvc.perform(post("/check-token")
-                .param("validationToken", "aaabbb")
-                .with(csrf()))
+                        .param("validationToken", "aaabbb")
+                        .with(csrf()))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(view().name("redirect:/"))
                 .andExpect(flash().attributeExists("message"))
@@ -140,7 +149,6 @@ class MemberControllerTest {
                 .andExpect(unauthenticated());
 
         Member member = memberRepository.findByEmail("bbb@aaa.com");
-        assertNotEquals("aaabbb", member.getValidationToken());
         then(javaMailSender).should().send(any(SimpleMailMessage.class));
     }
 
@@ -158,8 +166,54 @@ class MemberControllerTest {
                 .andExpect(unauthenticated());
     }
 
-}
+    @DisplayName("회원탈퇴로 인한 로그아웃")
+    @Test
+    @WithAccount("gogos")
+    void logout() throws Exception {
+        mockMvc.perform(post("/resignation")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(unauthenticated());
+    }
 
+    @DisplayName("로그아웃 버튼 클릭")
+    @Test
+    @WithAccount("gogos")
+    void logoutButton() throws Exception {
+        mockMvc.perform(post("/logout")
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"))
+                .andExpect(unauthenticated());
+    }
+
+    @DisplayName("비밀번호 분실, 이메일 인증 로그인-성공")
+    @Test
+    @WithAccount("gogos")
+    void forgotPassword() throws Exception {
+        Member byEmail = memberRepository.findByEmail("gogos@aaa.com");
+        byEmail.setValidated(true);
+
+        mockMvc.perform(post("/resend-token")
+                        .with(csrf())
+                        .param("email", "gogos@aaa.com"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/forgot-password"));
+        // 위 코드에서, 새로운 토큰을 보내니까, 그 토큰값으로 해당 회원의 토큰값이 바뀌어야 되고
+        // 그걸 가져와서 OK한다음 로그인이 되어야 하는건데.. 아 잘 된다 뭐 착각했었네
+        String token = memberRepository.findByEmail("gogos@aaa.com").getValidationToken();
+
+        System.out.println(token);
+        mockMvc.perform(post("/forgot-password")
+                        .param("validationToken", token)
+                        .with(csrf()))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/"))
+                .andExpect(authenticated());
+
+    }
+}
+//53bd30 c817b2
 
 
 

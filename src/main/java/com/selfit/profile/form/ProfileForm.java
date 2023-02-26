@@ -10,9 +10,6 @@ import org.hibernate.validator.constraints.Length;
 @NoArgsConstructor
 public class ProfileForm {
 
-    @Length(message = " 길이는 최소 2글자에서 최대 10글자 입니다.", min = 2, max = 10)
-    private String nickname;
-
     @Length(message = " 길이는 최대 20글자 입니다.", max = 20)
     private String bio;
 
@@ -28,7 +25,6 @@ public class ProfileForm {
     private String profileImage;
 
     public ProfileForm(Member member) {
-        this.nickname = member.getNickname();
         this.bio = member.getBio();
         this.url = member.getUrl();
         this.occupation = member.getOccupation();

@@ -18,7 +18,7 @@
             <span class="input-group-text" id="basic-addon1">E-Mail</span>
             <input id="email" type="email" th:field="*{email}" class="form-control"
                    placeholder="Selfit@admin.com" aria-describedby="emailHelp" required>
-            <button type="button" class="btn btn-primary btn-sm btn-color">중복 확인</button>
+            <button id="emailCheck" type="button" class="btn btn-primary btn-sm btn-color">중복 확인</button>
             <small class="invalid-feedback">이메일을 입력하세요.</small>
         </div>
 
@@ -27,7 +27,7 @@
             <span class="input-group-text" id="basic-addon3">닉네임</span>
             <input id="nickname" type="text" th:field="*{nickname}" class="form-control"
                    placeholder="Selfit" aria-describedby="nicknameHelp" required minlength="2" maxlength="10">
-            <button type="button"class="btn btn-primary btn-sm btn-color">중복 확인</button>
+            <button id="nicknameCheck" type="button"class="btn btn-primary btn-sm btn-color">중복 확인</button>
 
             <small class="invalid-feedback">닉네임을 입력하세요.</small>
         </div>
@@ -46,10 +46,13 @@
                    aria-describedby="passwordHelp" required minlength="8" maxlength="20">
             <small class="invalid-feedback">패스워드를 입력하세요.</small>
         </div>
+        <div id="password-match"></div>
 
-        <div class="form-text">비밀번호는 8자리 이상 영문, 숫자, 특수문자를 한 개 이상 사용해 주세요.</div>
 
-        <button type="submit" class="btn btn-primary btn-lg btn-color mt-3 ">회원 가입</button>
+        <div id="emailCheckText" class="form-text">이메일 중복 확인을 해주세요.</div>
+        <div id="nicknameCheckText" class="form-text">닉네임 중복 확인을 해주세요.</div>
+
+        <button id="joinButton" type="submit" class="btn btn-primary btn-lg btn-color mt-3" disabled>회원 가입</button>
     </form>
 
 </div>
@@ -61,6 +64,118 @@
 <div th:replace="fragments.html :: footer"></div>
 
 <script th:replace="fragments.html :: form-validation"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#passwordConfirm').on('keyup', function() {
+            if (($('#password').val() == $('#passwordConfirm').val()) && $('#password').val().length>=8) {
+                $('#password-match').html('비밀번호가 일치합니다.').css('color', 'green');
+                $('#joinButton').prop('disabled', false);
+            } else {
+                $('#password-match').html('비밀번호가 일치하지 않거나, 올바르지 않습니다.').css('color', 'red');
+                $('#joinButton').prop('disabled', true);
+            }
+        });
+    });
+</script>
+
+
+
+
+
+
+
+<script th:replace="fragments.html :: ajax-csrf-header"></script>
+
+<script th:inline="javascript">
+    var emailChecked = false;
+    var nicknameChecked = false;
+
+    $(function() {
+        $('#emailCheck').on('click', function() {
+
+            var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+            var inputVal = $('#email').val();
+
+            if(!emailPattern.test(inputVal)){
+                window.alert("이메일을 정확히 입력해주세요.");
+                return false;
+            }
+            var JoinForm = {
+                email : inputVal
+            };
+
+            $.ajax({
+                url: '/email-check',
+                type: 'POST',
+                contentType: "application/json",
+                data: JSON.stringify(JoinForm),
+
+                success: function(data) {
+                    if(data){
+                        window.alert("이미 존재하는 이메일 입니다.")
+
+
+                    } else{
+                        window.alert("사용 가능한 이메일 입니다.")
+                        $('#emailCheckText').remove();
+                        emailChecked = true;
+                        if(emailChecked && nicknameChecked){
+                            // $('#joinButton').prop('disabled', false);
+                        }
+                    }
+                },
+                error: function() {
+                    console.log('error');
+                }
+            });
+        });
+    });
+
+
+    $(function() {
+        $('#nicknameCheck').on('click', function() {
+
+            var inputVal = $('#nickname').val();
+
+            if (!(inputVal.length >= 2 && inputVal.length <= 10)) {
+                window.alert('닉네임은 2글자 이상, 10글자 이하로 입력해 주세요.')
+                return false;
+            }
+
+            var JoinForm = {
+                nickname : inputVal
+            };
+
+            $.ajax({
+                url: '/nickname-check',
+                type: 'POST',
+                contentType: "application/json",
+                data: JSON.stringify(JoinForm),
+
+                success: function(data) {
+                    if(data){
+                        window.alert("이미 존재하는 닉네임 입니다.")
+
+                    } else{
+                        window.alert("사용 가능한 닉네임 입니다.")
+                        $('#nicknameCheckText').remove();
+                        nicknameChecked = true;
+                        if(emailChecked && nicknameChecked){
+                            $('#joinButton').prop('disabled', false);
+                        }
+                    }
+                },
+                error: function() {
+                    console.log('error');
+                }
+            });
+        });
+    });
+
+</script>
+
+
 
 
 

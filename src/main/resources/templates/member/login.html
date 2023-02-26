@@ -38,7 +38,7 @@
 
         <button type="submit"class="btn btn-primary btn-lg btn-color mt-3" style="margin-right:10px;">로그인</button>
 
-        <h6 style="margin-top:3em;">"패스워드가 <a href="#" style="text-decoration:none;">기억이 나지 않는다면?</a>"</h6>
+        <h6 style="margin-top:3em;">"패스워드가 <a href="#" th:href="@{/resend-token}" style="text-decoration:none;">기억이 나지 않거나, 미 인증 회원이라면?</a>"</h6>
         <h6 style="margin-top:1em;">"아직 계정이 없으신가요?
             <a href="#" th:href="@{/join}" style="text-decoration: none;">지금 가입해보세요!</a>"
         </h6>

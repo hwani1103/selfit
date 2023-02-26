@@ -3,6 +3,7 @@ package com.selfit.member;
 import com.selfit.domain.Member;
 import com.selfit.logging.ClassLevelLogging;
 import com.selfit.member.form.JoinForm;
+import com.selfit.profile.form.NicknameForm;
 import com.selfit.profile.form.ProfileForm;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,7 @@ public class MemberService implements UserDetailsService {
     public Member newMember(JoinForm joinForm) {
         joinForm.setPassword(passwordEncoder.encode(joinForm.getPassword()));
         Member newMember = modelMapper.map(joinForm, Member.class);
+        newMember.setTokenCheckedTime(LocalDateTime.now());
         sendEmail(newMember);
         return memberRepository.save(newMember);
     }
@@ -49,8 +51,9 @@ public class MemberService implements UserDetailsService {
         mailMessage.setText("/check-token?token=" + newMember.getValidationToken()
                 + "&email=" + newMember.getEmail());
         javaMailSender.send(mailMessage);
-
     }
+
+
 
     public void defaultSet(Member member) {
         member.setValidated(true);
@@ -59,6 +62,7 @@ public class MemberService implements UserDetailsService {
     }
 
     public void login(Member member) {
+
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(
                         new Principal(member),
@@ -74,6 +78,10 @@ public class MemberService implements UserDetailsService {
         if (member == null) {
             throw new UsernameNotFoundException(email);
         }
+
+        if(!member.isValidated())
+            throw new IllegalArgumentException("미인증 회원");
+
         return new Principal(member);
     }
 
@@ -81,5 +89,38 @@ public class MemberService implements UserDetailsService {
         modelMapper.map(profileForm, member);
         memberRepository.save(member);
 
+    }
+
+    public void updatePassword(Member member, String newPassword) {
+        member.setPassword(passwordEncoder.encode(newPassword));
+        memberRepository.save(member);
+    }
+
+    public Member updateNickname(Member member, NicknameForm nicknameForm) {
+        member.setNickname(nicknameForm.getNickname());
+        memberRepository.save(member);
+        login(member);
+        return member;
+
+    }
+
+    public void resignation(Member member) {
+        memberRepository.delete(member);
+    }
+
+    public boolean canSendToken(String email) {
+
+        Member byEmail = memberRepository.findByEmail(email);
+
+        if(byEmail==null){
+            return false;
+        }
+        return byEmail.canResendToken();
+    }
+
+    public Member changePasswordByToken(String validationToken) {
+        Member byValidationToken = memberRepository.findByValidationToken(validationToken);
+        byValidationToken.setPassword(passwordEncoder.encode(validationToken));
+        return byValidationToken;
     }
 }

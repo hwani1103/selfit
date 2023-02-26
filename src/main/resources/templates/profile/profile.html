@@ -70,7 +70,7 @@
             <span th:text="${#temporals.format(member.joinedTime, 'yyyy년 M월 가입')}" class="col-9"></span>
           </p>
           <div th:if="${isOwner}">
-            <a class="btn btn-outline-primary" href="#" th:href="@{/profile/modify}">프로필 수정</a>
+            <a class="btn btn-outline-primary" href="#" th:href="@{/change/profile}">프로필 수정</a>
           </div>
         </div>
         <div class="tab-pane fade" id="v-pills-study" role="tabpanel" aria-labelledby="v-pills-profile-tab">

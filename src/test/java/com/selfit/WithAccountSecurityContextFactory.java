@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
 @RequiredArgsConstructor // 이부분 잘 모르겠으면 나중에 프로필 수정 테스트 강좌 다시 보자.
@@ -22,16 +23,19 @@ public class WithAccountSecurityContextFactory implements WithSecurityContextFac
     private final MemberService memberService;
     private final MemberRepository memberRepository;
     private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
+
     @Override
     public SecurityContext createSecurityContext(WithAccount withAccount) {
         String nickname = withAccount.value();
         System.out.println("WithAccountSecurityContextFactory 동작");
         JoinForm joinForm = new JoinForm();
-        joinForm.setPassword("12345678");
+        joinForm.setPassword(passwordEncoder.encode("12345678"));
         joinForm.setEmail(nickname + "@aaa.com");
         joinForm.setNickname(nickname);
         Member member = modelMapper.map(joinForm, Member.class);
         member.setValidationToken("aaabbb");
+        member.setValidated(true);
         memberRepository.save(member);
 
         UserDetails principal = memberService.loadUserByUsername(nickname+"@aaa.com");
