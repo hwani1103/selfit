@@ -13,7 +13,7 @@
 
     <h2 class="font-design-1" style="text-align:center; margin:3%;"> 로그인 </h2>
 
-    <div th:if="${param.error}"> 에러가 있다네 </div>
+    <div th:if="${param.error}"> <h6 style="color:red"> 로그인 정보를 다시 확인해 주세요.</h6> </div>
 
     <form class="needs-validation col-sm-12" action="#" th:action="@{/login}" method="post" novalidate>
         <div class="input-group mb-4">

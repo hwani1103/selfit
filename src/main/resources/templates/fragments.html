@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>Selfit Start!!</title>
     <link rel="stylesheet" href="/node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/node_modules/@yaireo/tagify/dist/tagify.css">
     <script src="/node_modules/jquery/dist/jquery.js"></script>
 <!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
 
@@ -30,6 +31,9 @@
         .dropdown-item {
             width: auto;
         }
+
+
+
     </style>
 
 </head>
@@ -138,7 +142,7 @@
     <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'modify'}? active" href="#" th:href="@{/change/profile}">프로필 변경</a>
     <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'password'}? active" href="#" th:href="@{/change/password}">비밀번호 변경</a>
     <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'notifications'}? active" href="#" th:href="@{/settings/notifications}">알림</a>
-    <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'tags'}? active" href="#" th:href="@{/settings/tags}">관심 주제</a>
+    <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'tags'}? active" href="#" th:href="@{/change/tags}">관심 주제</a>
     <a class="list-group-item list-group-item-action" th:classappend="${currentMenu == 'zones'}? active" href="#" th:href="@{/settings/zones}">활동 지역</a>
     <a class="list-group-item list-group-item-action list-group-item-danger" th:classappend="${currentMenu == 'account'}? active" href="#" th:href="@{/change/nickname}">계정</a>
 </div>

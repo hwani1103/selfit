@@ -160,4 +160,19 @@ class ProfileControllerTest {
 
     }
 
+    @WithAccount("gogos")
+    @DisplayName("태그 전체 조회")
+    @Test
+    void findTags() throws Exception{
+        mockMvc.perform(get("/change/tags"))
+                .andExpect(model().attributeExists("tags"))
+                .andExpect(model().attributeExists("whitelist"))
+                .andExpect(model().attributeExists("allTags"))
+                .andExpect(status().isOk());
+
+
+    }
+
+
+
 }

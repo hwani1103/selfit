@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments.html :: head"></head>
+<body class="bg-light">
+<div th:replace="fragments.html :: main-nav"></div>
+<div class="container">
+  <div class="row mt-5 justify-content-center">
+    <div class="col-2">
+      <div th:replace="fragments.html :: settings-menu(currentMenu='tags')"></div>
+    </div>
+    <div class="col-8">
+      <div class="row">
+        <h2 class="col-12">관심 주제 선택 </h2>
+        <h6 class="col-12">아래의 항목 중 관심있는 주제를 선택하여 관심 영역에 추가해주세요.  </h6>
+        <h6 class="col-12">관심 영역에 추가한 컨텐츠는 자동으로 추천됩니다. </h6>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <div class="alert alert-info" role="alert">
+
+            <div id="allTags" th:text="${#strings.listJoin(allTags, ', ')}"></div>
+          </div>
+          <div id="whitelist" th:text="${whitelist}" hidden></div>
+          <input id="tags" type="text" name="tags" th:value="${#strings.listJoin(tags, ',')}"
+                 class="tagify-outside" aria-describedby="tagHelp"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/node_modules/@yaireo/tagify/dist/tagify.min.js"></script>
+
+<script th:replace="fragments.html :: ajax-csrf-header"></script>
+<script th:replace="fragments.html :: footer"></script>
+
+
+<script type="application/javascript">
+  $(function () {
+    function tagRequest(url, tagTitle) {
+      $.ajax({
+        dataType: "json",
+        autocomplete: {
+          enabled: true,
+          rightKey: true,
+        },
+        contentType: "application/json; charset=utf-8",
+        method: "POST",
+        url: "/change/tags" + url,
+        data: JSON.stringify({'tagTitle': tagTitle})
+      }).done(function (data, status) {
+        console.log("${data} and status is ${status}");
+
+      });
+    }
+
+    function onAdd(e) {
+      tagRequest("/add", e.detail.data.value);
+    }
+
+    function onRemove(e) {
+      tagRequest("/remove", e.detail.data.value);
+    }
+
+    var tagInput = document.querySelector("#tags");
+
+    var tagify = new Tagify(tagInput, {
+      enforceWhitelist:true,
+      whitelist: JSON.parse(document.querySelector("#whitelist").textContent), // tagify가 제공하는 whitelist 사용. 이미 검색했던 태그들을 자동완성 해줌.
+      dropdown: {
+        enabled: 1,
+
+      }
+    });
+
+    tagify.on("add", onAdd);
+    tagify.on("remove", onRemove);
+
+    tagify.DOM.input.classList.add('form-control');
+    tagify.DOM.scope.parentNode.insertBefore(tagify.DOM.input, tagify.DOM.scope);
+
+  });
+</script>
+
+</body>
+</html>

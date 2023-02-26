@@ -1,6 +1,7 @@
 package com.selfit.member;
 
 import com.selfit.domain.Member;
+import com.selfit.domain.Tag;
 import com.selfit.logging.ClassLevelLogging;
 import com.selfit.member.form.JoinForm;
 import com.selfit.profile.form.NicknameForm;
@@ -22,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -123,4 +126,22 @@ public class MemberService implements UserDetailsService {
         byValidationToken.setPassword(passwordEncoder.encode(validationToken));
         return byValidationToken;
     }
+
+    public void addTag(Member member, Tag tag){
+        Optional<Member> byId = memberRepository.findById(member.getId());
+        byId.ifPresent(a->a.getTags().add(tag));
+    }
+
+    public Set<Tag> getTags(Member member){
+        Optional<Member> byId = memberRepository.findById(member.getId());
+        return byId.orElseThrow().getTags();
+    }
+
+    public void removeTag(Member member, Tag tag){
+        Optional<Member> byId = memberRepository.findById(member.getId());
+        byId.ifPresent(a -> a.getTags().remove(tag));
+    }
+
+
+
 }
