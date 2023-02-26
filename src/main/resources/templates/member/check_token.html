@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:replace="fragments.html :: head"></div>
+<body class="bg-light">
+<div th:replace="fragments.html :: main-nav"></div>
+
+<div style="width:40%; margin-left:auto; margin-right:auto; margin-top:10em; margin-bottom:10em;
+            padding:15px; border:2px solid rgb(52, 51, 47); border-radius:10px;">
+    <form class="needs-validation col-sm-10" action="#"
+          th:action="@{/check-token}" th:object="${tokenForm}" method="post" novalidate>
+
+        <div class="input-group mb-4">
+            <span class="input-group-text" id="basic-addon1">인증번호 입력</span>
+            <input id="email" type="email" th:field="*{validationToken}" class="form-control"
+                   aria-describedby="emailHelp" >
+        </div>
+            <small class="form-text text-danger" th:if="${#fields.hasErrors('validationToken')}"
+                   th:errors="*{validationToken}">validationToken Error</small>
+        <br>
+
+        <button type="submit" class="btn btn-primary btn-sm btn-color mt-3">인증하기</button>
+    </form>
+
+<!--    <form class="needs-validation col-sm-8" action="#"-->
+<!--          th:action="@{/resend-token}" method="get" novalidate>-->
+<!--        <button type="submit" class="btn btn-primary btn-sm btn-color mt-3">인증 메일 재전송</button>-->
+<!--    </form>--> <!-- 불필요할것같아서 지움. -->
+</div>
+
+<div th:replace="fragments.html :: footer"></div>
+
+
+
+<script src="/node_modules/jquery/dist/jquery.min.js"></script>
+<script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+

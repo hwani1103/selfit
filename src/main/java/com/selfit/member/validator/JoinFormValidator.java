@@ -1,6 +1,7 @@
-package com.selfit.member;
+package com.selfit.member.validator;
 
 
+import com.selfit.member.MemberRepository;
 import com.selfit.member.form.JoinForm;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

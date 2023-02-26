@@ -6,14 +6,22 @@
 <body class="bg-light">
 <div th:replace="fragments.html :: main-nav"></div>
 
+<div th:if="${message1}" class="alert alert-primary alert-dismissible fade show" role="alert">
+    <strong th:text="${message1}"></strong>
+    <a href="#" th:href="@{/change/password}">변경하러 가기</a>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+
+
 
 <h3 style="text-align:center; margin:100px;"> Welcome Selfit !! </h3>
+<h2 style="text-align:center; margin:100px;" th:if="${message}" th:text="${message}"></h2>
 
 
 <div th:replace="fragments.html :: footer"></div>
 
-<script src="/node_modules/jquery/dist/jquery.min.js"></script>
-<script src="/node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
 

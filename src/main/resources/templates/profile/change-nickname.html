@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments.html :: head"></head>
+<body class="bg-light">
+<nav th:replace="fragments.html :: main-nav"></nav>
+<div class="container">
+  <div class="row mt-5 justify-content-center">
+    <div class="col-2">
+      <div th:replace="fragments.html :: settings-menu(currentMenu='account')"></div>
+    </div>
+    <div class="col-8">
+      <div th:if="${message}" class="alert alert-primary alert-dismissible fade show" role="alert">
+        <strong th:text="${message}"></strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+      <div class="row">
+        <h2 class="col-12">닉네임 변경</h2>
+      </div>
+      <div class="row">
+        <form class="needs-validation col-12" th:object="${nicknameForm}" th:action="@{/change/nickname}" method="post" novalidate>
+
+          <div class="form-group" style="margin-top:2.5%;">
+            <input id="nickname" type="text" th:field="*{nickname}" class="form-control" aria-describedby="nicknameHelp" required>
+            <small id="nicknameHelp" class="form-text text-muted">
+              공백없이 문자와 숫자로만 3자 이상 20자 이내로 입력하세요. 가입후에 변경할 수 있습니다.
+            </small>
+            <small class="invalid-feedback">닉네임을 입력하세요.</small>
+            <small class="form-text text-danger" th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}">nickname Error</small>
+          </div>
+          <div class="form-group">
+            <button class="btn btn-outline-primary" type="submit" aria-describedby="submitHelp">변경하기</button>
+          </div>
+        </form>
+      </div>
+      <div class="dropdown-divider" style="margin-top:5%;"></div>
+      <div class="row">
+        <div class="col-sm-12">
+          <h2 class="text-danger">회원 탈퇴</h2>
+          <div id="resignationAlert" class="alert alert-success" role="alert" style="display:none;">
+            정상적으로 탈퇴처리 완료되었습니다. 다음 기회에 또 방문해 주세요. 감사합니다.
+          </div>
+          <button id="resignationButton" class="btn btn-outline-danger">회원 탈퇴</button>
+
+          <div id="passwordConfirm" class="form-group" style="display:none; margin-top:2.5%; margin-bottom:2.5%;">
+
+            <label for="newPassword">비밀번호 확인</label>
+            <input id="newPassword" type="password"  class="form-control"
+                   aria-describedby="newPasswordHelp" required min="8" max="20"> <!-- 여기서 min max.. -->
+
+            <small class="invalid-feedback">비밀번호 입력하세요.</small>
+          </div>
+          <div id="resignationConfirmButton" class="form-group" style="margin-top:2.5%; display:none;">
+            <button id="resignationSubmitButton" class="btn btn-outline-danger">회원 탈퇴</button>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div th:replace="fragments.html :: footer"></div>
+</div>
+<script th:replace="fragments.html :: form-validation"></script>
+
+
+<script th:replace="fragments.html :: ajax-csrf-header"></script>
+
+
+
+
+
+
+
+<script th:inline="javascript">
+
+  $(function(){
+    $('#resignationButton').on('click', function() {
+       $('#passwordConfirm').show();
+       $('#resignationConfirmButton').show();
+       $('#resignationButton').remove();
+    })
+  })
+
+
+  $(function() {
+    $('#resignationSubmitButton').on('click', function() {
+      var inputVal = $('#newPassword').val();
+      var PasswordForm = {
+        newPassword : inputVal
+      }
+
+      $.ajax({
+        url: '/resignationConfirm',
+        type: 'POST',
+        contentType: "application/json",
+        data: JSON.stringify(PasswordForm),
+
+        success: function(data) {
+          if (data) {
+            if(confirm("정말로 탈퇴하시겠습니까?")){
+              var inputVal = $('#newPassword').val();
+              var PasswordForm = {
+                newPassword : inputVal
+              }
+
+              $.ajax({
+                url: '/resignation',
+                type: 'POST',
+                contentType: "application/json",
+                data: JSON.stringify(PasswordForm),
+
+                success: function(data) {
+                  if (data) {
+                    $('#resignationAlert').show();
+                    $('#passwordConfirm').remove();
+                    $('#resignationConfirmButton').remove();
+                    setTimeout(function () {
+                      window.location.href = "/";
+                    }, 3000);
+
+                    // 메시지 출력
+                    var message = $('<div>').text("3초 후에 메인 페이지로 이동합니다.").css({
+                      'font-size': '20px',
+                      'font-weight': 'bold',
+                      'text-align': 'center',
+                      'margin-top': '20px'
+                    });
+                    $('body').append(message);
+
+                    // 1초마다 남은 시간 출력
+                    var remainingTime = 3;
+                    var intervalId = setInterval(function () {
+                      remainingTime--;
+                      message.text(remainingTime + "초 후에 메인 페이지로 이동합니다.");
+                      if (remainingTime === 0) {
+                        clearInterval(intervalId);
+                      }
+                    }, 1000);
+                  } else {
+                    window.alert("비밀번호가 올바르지 않습니다.")
+                  }
+                }
+                ,
+                error: function () {
+                  console.log('error');
+                }
+              });
+            } else {
+              return false;
+            }
+
+            } else {
+              window.alert("비밀번호가 올바르지 않습니다.")
+            }
+          }
+        ,
+          error: function () {
+            console.log('error');
+          }
+        });
+    });
+  });
+
+</script>
+
+
+</body>
+</html>

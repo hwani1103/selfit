@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<div th:replace="fragments.html :: head"></div>
+<body class="bg-light">
+<div th:replace="fragments.html :: main-nav"></div>
+
+
+
+<div style="width:50%; margin-left:auto; margin-right:auto; margin-top:2em; margin-bottom:2em;">
+    <h2 class="font-design-1" style="margin-bottom:30px;"> 오늘도 Selfit과 함께 좋은 결과를 만들어가요!</h2>
+
+    <h2 class="font-design-1" style="text-align:center; margin:3%;"> 로그인 </h2>
+
+    <div th:if="${param.error}"> 에러가 있다네 </div>
+
+    <form class="needs-validation col-sm-12" action="#" th:action="@{/login}" method="post" novalidate>
+        <div class="input-group mb-4">
+            <span class="input-group-text" id="basic-addon1">E-Mail</span>
+            <input id="username" name="username" type="text" class="form-control" placeholder="Selfit@admin.com" aria-describedby="emailHelp" required>
+        </div>
+
+        <small class="invalid-feedback">이메일을 입력하세요.</small>
+
+
+        <div class="input-group mb-4">
+            <span class="input-group-text" id="basic-addon5">비밀번호</span>
+            <input id="password" name="password" type="password" class="form-control" aria-describedby="passwordHelp" required>
+        </div>
+
+        <small class="invalid-feedback">패스워드를 입력하세요.</small>
+
+        <div class="form-group form-check"> <!-- 스프링 시큐리티에서 사용하는 로그인 유지 파라미터 값이 rememberMe. 이 값이 true여야 리멤버미 쿠키를 만들어줌.-->
+            <input type="checkbox" class="form-check-input" id="rememberMe" name="remember-me" checked>
+            <label class="form-check-label" for="rememberMe" aria-describedby="rememberMeHelp">로그인 유지</label>
+        </div>
+
+        <button type="submit"class="btn btn-primary btn-lg btn-color mt-3" style="margin-right:10px;">로그인</button>
+
+        <h6 style="margin-top:3em;">"패스워드가 <a href="#" th:href="@{/resend-token}" style="text-decoration:none;">기억이 나지 않거나, 미 인증 회원이라면?</a>"</h6>
+        <h6 style="margin-top:1em;">"아직 계정이 없으신가요?
+            <a href="#" th:href="@{/join}" style="text-decoration: none;">지금 가입해보세요!</a>"
+        </h6>
+
+    </form>
+
+</div>
+
+
+
+
+
+<div th:replace="fragments.html :: footer"></div>
+
+<script th:replace="fragments.html :: form-validation"></script>
+
+
+
+</body>
+</html>
+
+
+
+
+
+
