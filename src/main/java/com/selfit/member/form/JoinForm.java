@@ -10,7 +10,7 @@ import javax.validation.constraints.Pattern;
 
 @Data
 public class JoinForm {
-
+//회원가입 폼. 현재는 기능에 맞는 폼을 항상 만들어서 사용하고 있고 그게 편리한듯
     @Email
     @NotBlank(message = "이메일을 입력해 주세요.")
     private String email;
@@ -26,24 +26,3 @@ public class JoinForm {
 
     
 }
-
-
-//
-//@Data
-//public class SignUpForm {
-//
-//    @NotBlank(message = "공백은 허용되지 않습니다.")
-//    @Length(message = " 길이는 최소 3글자에서 최대 20글자 사이입니다.", min = 3, max = 20)
-//    @Pattern(message = " 특수문자는 _, - 만 허용됩니다.", regexp = "^[ㄱ-ㅎ가-힣a-z0-9_-]{3,20}$")
-//    private String nickname;
-//
-//    @Email
-//    @NotBlank
-//    private String email;
-//
-//    @NotBlank
-//    @Length(min = 8, max = 50)
-//    private String password;
-//
-//
-//}

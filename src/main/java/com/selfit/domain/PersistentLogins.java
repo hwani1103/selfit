@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 @Setter
 public class PersistentLogins {
 
+    //리멤버미 토큰 관련.
+
     @Id
     @Column(length = 64)
     private String series;

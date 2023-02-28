@@ -12,7 +12,7 @@ import org.springframework.validation.Validator;
 @Component
 @RequiredArgsConstructor
 public class TokenFormValidator implements Validator {
-
+//밸리데이터 검증 로직은 얼마든지 다양하고 복잡해질 수 있음.
     private final MemberRepository memberRepository;
     private final MemberService memberService;
 

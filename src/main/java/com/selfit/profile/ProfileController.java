@@ -37,7 +37,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ProfileController {
 
-    private final MemberRepository memberRepository;
     private final MemberService memberService;
     private final PasswordEncoder passwordEncoder;
     private final NicknameFormValidator nicknameFormValidator;
@@ -134,9 +133,14 @@ public class ProfileController {
 
         Set<Tag> tags = memberService.getTags(member);
         model.addAttribute("tags", tags.stream().map(Tag::getTitle).collect(Collectors.toList()));
+        //Tag는 멤버 엔티티에서 Set으로 들고있음.
+        //Set을 stream으로 바꾼뒤. Title(String)의 Set으로 바꾼다음. 다시 List<String>으로 바꾼것.
+
 
         List<String> allTags = tagRepository.findAll().stream().map(Tag::getTitle).collect(Collectors.toList());
-
+        for (String allTag : allTags) {
+            System.out.println("allTag = " + allTag);
+        }
         model.addAttribute("whitelist", objectMapper.writeValueAsString(allTags));
         model.addAttribute("allTags", allTags);
         return "profile/change-tags";
