@@ -25,6 +25,7 @@ public class TagService {
 
     @PostConstruct // interest_topics.csv
     public void initTags() throws IOException {
+        System.out.println("initTags");
         if (tagRepository.count() == 0) {
             Resource resource = new ClassPathResource("interest_topics.csv");
             List<Tag> tagList = Files.readAllLines(resource.getFile().toPath(), StandardCharsets.UTF_8).stream()

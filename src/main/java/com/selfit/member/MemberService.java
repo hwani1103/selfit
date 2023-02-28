@@ -65,7 +65,10 @@ public class MemberService implements UserDetailsService {
     }
 
     public void login(Member member) {
-
+    //이 login의 경우 /login post요청 외에 특정 비즈니스 로직상 로그인을 시켜야 할 경우에 수행된다.
+        //예를들어 토큰 인증이 완료되면 로그인할 경우.
+        //이렇게 로그인하나 밑에 loadUserByUsername을 사용하나 동일한 로그인 결과가 나옴.
+        //더 디테일하게는 아직 모름
         UsernamePasswordAuthenticationToken token =
                 new UsernamePasswordAuthenticationToken(
                         new Principal(member),

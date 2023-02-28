@@ -12,7 +12,7 @@ import javax.mail.internet.MimeMessage;
 import java.io.InputStream;
 
 
-@Profile({"local", "logging"})
+//로컬로만 메일을 보내는 메일 센더. 직접 이메일 보내게 할 수 있고 이는 인프런 강의를 참고하면 된다.
 @Component
 @Slf4j
 public class ConsoleMailSender implements JavaMailSender {

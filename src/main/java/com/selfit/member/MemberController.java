@@ -41,7 +41,6 @@ public class MemberController {
     private final MemberService memberService;
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final TagRepository tagRepository;
 
 
     @InitBinder("joinForm")
@@ -117,14 +116,14 @@ public class MemberController {
         return "redirect:/check-token";
     }
 
-    @GetMapping("/forgot-password") //TODO 테스트 보완 필요 , 테스트 작성하다가 어려워서 멈춤.
+    @GetMapping("/forgot-password")
     public String tokenLogin(Model model) {
         TokenForm tokenForm = new TokenForm();
         model.addAttribute(tokenForm);
         return "member/forgot_password";
     }
 
-    @PostMapping("/forgot-password") //TODO 테스트 보완 필요 , 기능은 정상 작동되는데 테스트 짜기가 어렵네
+    @PostMapping("/forgot-password")
     public String tokenLoginSubmit(@Valid @ModelAttribute TokenForm tokenForm, Errors errors,
                                    RedirectAttributes redirectAttributes) {
         if (errors.hasErrors()) { //이메일 검증.
@@ -163,10 +162,9 @@ public class MemberController {
 
         model.addAttribute(byNickname);
         model.addAttribute("isOwner", byNickname.equals(member));
-        Set<Tag> tags = memberService.getTags(member);
-        List<String> allTags = tags.stream().map(Tag::getTitle).collect(Collectors.toList());
+        Set<Tag> tags = memberService.getTags(byNickname);
 
-        model.addAttribute("allTags", allTags);
+        model.addAttribute("allTags", tags.stream().map(Tag::getTitle).collect(Collectors.toList()));
 
         return "profile/profile";
     }

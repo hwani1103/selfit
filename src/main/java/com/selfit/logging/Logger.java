@@ -2,6 +2,7 @@ package com.selfit.logging;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
@@ -9,6 +10,9 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class Logger {
+    //로깅 기능. 현재는 @ClassLevelLogging 애너테이션만 사용하고 있음.
+    //애너테이션을 붙이기만 하면 모든 메서드에 대해 로그가 남아서 꽤 편리하다.
+
 
     @Pointcut("@within(com.selfit.logging.ClassLevelLogging)")
     public void loggableClass() {}
@@ -20,10 +24,12 @@ public class Logger {
     public void notLoggableMethod() {}
 
     @Before("(loggableClass() ||  loggableMethod()) && !notLoggableMethod()")
-    public void adviceBefore(JoinPoint jp)  {
-        log.info("=====start=====[" + stringFormatter(jp.getSignature().toString())+"]");
+    public void adviceBefore(JoinPoint jp) {
+        log.info("=====start=====[" + jp.getSignature().toShortString() +"]");
+        log.info("시그니처 = {}", jp.getSignature().toString());
         printArgs(jp.getArgs());
-        log.info("타겟[{}]", stringFormatter(jp.getTarget().toString()));
+
+        log.info("타겟[{}]", stringFormatter(jp.getTarget().toString())); //타겟 : 실제 호출할 대상.
         log.info("This[{}]", stringFormatter(jp.getThis().toString()));
     }
 
@@ -44,7 +50,7 @@ public class Logger {
 
     @After("(loggableClass() ||  loggableMethod()) && !notLoggableMethod()")
     public void adviceAfter(JoinPoint jp)  {
-        log.info("======end======[" + stringFormatter(jp.getSignature().toString())+"]");
+        log.info("======end======[" + jp.getSignature().toShortString() +"]");
     }
 
     @AfterThrowing("(loggableClass() ||  loggableMethod()) && !notLoggableMethod()")

@@ -34,7 +34,7 @@ public class Member {
 
     private String url;
 
-    @ManyToMany
+    @ManyToMany // 다대다 관계 단방향으로 설계.
     private Set<Tag> tags = new HashSet<>();
 
     private String occupation;
@@ -55,7 +55,7 @@ public class Member {
 
     private boolean validated;
 
-    public void createToken() {
+    public void createToken() { // 토큰을 만들면서 토큰이 만들어진 시간을 설정함.
         this.validationToken = UUID.randomUUID().toString().substring(0, 6);
         this.tokenCheckedTime = LocalDateTime.now();
     }
